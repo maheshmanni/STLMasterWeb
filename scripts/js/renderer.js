@@ -14,12 +14,16 @@ function Render() {
    cube.castShadow = true;
     cube.position.y = cube.geometry.parameters.height/2;
     //scene.add( cube );
-	var loader = new THREE.OBJLoader();
+	
     var fileButton = document.getElementById("fileButton");
     fileButton.addEventListener('change', function(e){
 
     var file = e.target.files[0];
-    var reader = new FileReader();
+    const fileExt = GetFileExtension(file.name);
+    if(fileExt == 'obj' || fileExt == 'OBJ')
+    {
+        var loader = new THREE.OBJLoader();
+        var reader = new FileReader();
     reader.readAsText(file);
     reader.addEventListener('load', function(event) {
       var contents = event.target.result;
@@ -29,8 +33,18 @@ function Render() {
         child.material = material;
       } );
       scene.add(object);
-//      render();
       });
+    }
+    
+    else
+    {
+        var loader = new THREE.STLLoader();
+        var tmppath = URL.createObjectURL(e.target.files[0]);
+      loader.load( tmppath, function ( geometry ) {
+        scene.add( new THREE.Mesh( geometry, material ) );
+        });
+    }
+      
 
 });
 
@@ -143,4 +157,9 @@ function getMaterial(type, color) {
 	}
 
 	return selectedMaterial;
+}
+
+function GetFileExtension(filePath)
+{
+    return filePath.split('.').pop();
 }
