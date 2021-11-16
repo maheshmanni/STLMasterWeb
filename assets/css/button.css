@@ -35,3 +35,14 @@
 	background-repeat: no-repeat;
 	background-size: cover;
   }
+
+  .colorpick {
+	border: none;
+	color: white;
+	padding: 15px 32px;
+	font-size: 16px;
+  }
+
+  #file-input {
+	display: none;
+  }

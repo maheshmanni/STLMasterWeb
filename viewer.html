@@ -3,17 +3,65 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="assets/css/button.css">
+		<link rel="stylesheet" type="text/css" href="assets/css/dropdown.css">
+		<link rel="stylesheet" type="text/css" href="assets/css/navbar.css">
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+		<title>STL Viewer</title>
 		<style>
 			body { margin: 0; }
 		</style>
 	</head>
-	<body>
-		<div class="upload-btn-wrapper">
-			<button class="button">Load Model</button>
-		<input type = "file" value = "upload" id = "fileButton"></input>
-		</div>
+	<body> 
+		<div class="navbar" id="mySidenav">
+
+			<input type="file" style="display:none" id="fileButton"/>
+			<a href="#" onclick="document.getElementById('fileButton').click()">Import File</a>
+			
+			<input type="color" style="display:none" id="colorpicker"/>
+			<a href="#" onclick="document.getElementById('colorpicker').click()">Color</a>
+			<div class="dropdown">
+			  <button class="dropbtn">Metal 
+				<i class="fa fa-caret-down"></i>
+			  </button>
+			  <div class="dropdown-content">
+				<a href="#" id = "0">Gold</a>
+				<a href="#" id = "1">Silver</a>
+				<a href="#" id = "2">Rose Gold</a>
+				<a href="#" id = "3">Red</a>
+				<a href="#" id = "4">Blue</a>
+				<a href="#" id = "5">Grey</a>
+			  </div>
+			</div> 
+
+			<div class="dropdown">
+				<button class="dropbtn">Stone 
+				  <i class="fa fa-caret-down"></i>
+				</button>
+				<div class="dropdown-content">
+				  <a href="#" id = "6">Green</a>
+				  <a href="#" id = "7">Blue</a>
+				  <a href="#" id = "8">Red</a>
+				  <a href="#" id = "9">White</a>
+				  <a href="#" id = "10">Yellow</a>
+				</div>
+			  </div> 
+
+			  <a href="#" id = "11">Undo</a>
+			  <a href="#" id = "12">Delete All</a>
+			
+			  <div class="dropdown">
+				<button class="dropbtn">Background 
+				  <i class="fa fa-caret-down"></i>
+				</button>
+				<div class="dropdown-content">
+				  <a href="#" id = "13">Scene1</a>
+				  <a href="#" id = "14">Scene2</a>
+				  <a href="#" id = "15">Scene3</a>
+				  <a href="#" id = "16">Scene4</a>
+				  <a href="#" id = "17">Scene5</a>
+				</div>
+			  </div> 
+		  </div>
 		<script src="scripts/js/three.js"></script>
         <script src="scripts/js/OrbitControls.js"></script>
 		<script src="scripts/js/OBJLoader.js"></script>
