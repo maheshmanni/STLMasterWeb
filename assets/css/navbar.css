@@ -5,6 +5,174 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.icon {
+  float: left;
+  background: url('/img/folder.png');
+  height: 20px;
+  width: 20px;
+  display: block;
+  margin-right: 5px;
+  /* Other styles here */
+}
+.gold {
+  float: left;
+  background: url('/img/ic_gold@1x.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+.silver {
+  float: left;
+  background: url('/img/ic_silver@1x.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.rose {
+  float: left;
+  background: url('/img/ic_rose@1x.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.red {
+  float: left;
+  background: url('/img/ic_red.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.blue {
+  float: left;
+  background: url('/img/ic_blue.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.grey {
+  float: left;
+  background: url('/img/ic_grey.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.gblue {
+  float: left;
+  background: url('/img/ic_diamond@1x.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.gpurple {
+  float: left;
+  background: url('/img/ic_purple.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.gred {
+  float: left;
+  background: url('/img/ic_purple.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.ggreen {
+  float: left;
+  background: url('/img/ic_greeng.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.gwhite {
+  float: left;
+  background: url('/img/ic_white.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.gyellow {
+  float: left;
+  background: url('/img/ic_yellow.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.picker {
+  float: left;
+  background: url('/img/ic_picker.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.undo {
+  float: left;
+  background: url('/img/ic_undo.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.delete {
+  float: left;
+  background: url('/img/ic_delete.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
+.measure {
+  float: left;
+  background: url('/img/ic_measure.png');
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  display: block;
+  /* Other styles here */
+}
+
 .topnav {
   overflow: hidden;
   background-color: #e9e9e9;

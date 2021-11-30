@@ -1,10 +1,11 @@
 class SceneObjects
 {
-    constructor(object, material, mesh)
+    constructor(object, material, mesh, bb)
     {
         this.object = object;
         this.material = material;
         this.mesh = mesh;
+        this.bb = bb;
     }
 }
 var material;
@@ -12,10 +13,21 @@ var selectedObjColor;
 var hasObjectsPicked = false;
 const aSceneObjects = [];
 const aBackgroundScene = [];
+
+var mBoundingBox;
+var MeasureText = [];
+var mBBGeom;
+const sceneBoundingBox = [];
 var renderer;
+var gui;
+var lightCube;
+var mSelectedMaterial;
 function Render() {
     const scene = new THREE.Scene();
-    var gui = new dat.GUI();
+    gui = new dat.GUI();
+   // mSelectedMaterial = getMaterial('standard', 'rgb(255, 217, 145)', lightCube);
+   // gui.add(mSelectedMaterial, 'metalness', 0, 1);
+   // gui.add(mSelectedMaterial, 'roughness', 0, 1);
     const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
     renderer = new THREE.WebGLRenderer();
@@ -56,6 +68,7 @@ function Render() {
             if (intersects.length > 0) {
 
                 material = intersects[0].object.material;
+                mSelectedMaterial = material;
                 selectedObjColor = material.color;
                 material.color = new THREE.Color( "rgb(255, 255, 0)");
                 hasObjectsPicked = true;
@@ -67,11 +80,11 @@ function Render() {
     var file = e.target.files[0];
     const fileExt = GetFileExtension(file.name);
 
-  
     if(fileExt == 'obj' || fileExt == 'OBJ')
     {
-        material = getMaterial('standard', 'rgb(255, 217, 145)');
-        material.envMap = reflectionCube;
+        material = getMaterial('standard', 'rgb(255, 217, 145)', lightCube);
+        material.envMap = lightCube;
+        mSelectedMaterial = material;
         var loader = new THREE.OBJLoader();
         var reader = new FileReader();
         reader.readAsText(file);
@@ -83,33 +96,40 @@ function Render() {
       {
           const child = object.children[0];
         child.material = material;
-        const sceneObj = new SceneObjects(object, material, child);
+        child.geometry.computeBoundingBox();
+
+        var boundingBox = child.geometry.boundingBox.clone();
+        const sceneObj = new SceneObjects(object, material, child, boundingBox);
+
+        
         aSceneObjects.push(sceneObj);
+        UpdateBB();
+     
+        
       }
-      //currentObject = object;
-   /*   object.traverse(function(child) {
-        child.material = material;
-        const sceneObj = new SceneObjects(object, material, new THREE.Mesh(child.geometry));
-      aSceneObjects.push(sceneObj);
-      } );*/
       scene.add(object);
+      DeleteBB(scene);
       });
     }
     
     else
     {
-        material = getMaterial('standard', 'rgb(255, 217, 145)');
-        material.envMap = reflectionCube;
+        material = getMaterial('standard', 'rgb(255, 217, 145)', lightCube);
+        material.envMap = lightCube;
 
+        mSelectedMaterial = material;
         var loader = new THREE.STLLoader();
         var tmppath = URL.createObjectURL(e.target.files[0]);
         loader.load( tmppath, function ( geometry ) {
         var mesh = new THREE.Mesh(geometry);
+        geometry.computeBoundingBox();
         mesh.material = material;
-        const sceneObj = new SceneObjects(mesh, material, mesh);
+        const sceneObj = new SceneObjects(mesh, material, mesh, geometry.boundingBox.clone());
         aSceneObjects.push(sceneObj);
+        UpdateBB();
         scene.add(mesh);  
-        
+        DeleteBB(scene);
+
         });
     }
       
@@ -208,6 +228,9 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
             case '17':
                 scene.background = aBackgroundScene[4];
                 break;
+            case '18':
+                DrawBB(scene);
+                break;
                   
         default:
             break;
@@ -217,14 +240,6 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
 });
 
 
-	/*loader.load('https://firebasestorage.googleapis.com/v0/b/manni-technology.appspot.com/o/folder%2Flee-perry-smith-head-scan.obj?alt=media&token=54981eee-fa05-4dc2-a490-2ee006de0c78', function (object) {
-
-		object.traverse(function(child) {
-			child.material = material;
-		} );
-		scene.add(object);
-	}
-);*/
     var pointLight = CreateDirectionLight(1);
     pointLight.position.y = 2;
     pointLight.position.x = 2;
@@ -241,14 +256,6 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
     var axes = THREE.AxisHelper(20);
    // scene.add(axes);
 	//gui.add(axes, 'visible');
-	/*var path = '/assets/cubemap/';
-	var ext = '.jpg';
-
-	var urls = [ path + 'posx' + ext, path + 'negx' + ext,
-				path + 'posy' + ext, path + 'negy' + ext,
-				path + 'posz' + ext, path + 'negz' + ext ];
-  var reflectionCube = new THREE.CubeTextureLoader().load(urls);
-    reflectionCube.format = THREE.RGBFormat;*/
     
     LoadCubemap();
     const reflectionCube = aBackgroundScene[0];
@@ -285,6 +292,11 @@ function CreateGroundPlane(size) {
     return mesh;
 }
 
+function CreateBoundingBox()
+{
+
+}
+
 function Undo(scene)
 {
     if(aSceneObjects.length > 0)
@@ -306,6 +318,113 @@ function DeleteAll(scene)
         scene.remove(aSceneObjects[aSceneObjects.length - 1].object);
         aSceneObjects.pop();
     }
+}
+
+function UpdateBB()
+{
+    if(aSceneObjects.length == 0)
+    {
+        return;
+    }
+    mBoundingBox = aSceneObjects[0].bb;
+    for(let i = 1; i < aSceneObjects.length; ++i)
+    {
+        mBoundingBox.min.x = Math.min(aSceneObjects[i].bb.min.x, mBoundingBox.min.x);
+        mBoundingBox.min.y = Math.min(aSceneObjects[i].bb.min.y, mBoundingBox.min.y);
+        mBoundingBox.min.z = Math.min(aSceneObjects[i].bb.min.z, mBoundingBox.min.z);
+
+        mBoundingBox.max.x = Math.max(aSceneObjects[i].bb.max.x, mBoundingBox.max.x);
+        mBoundingBox.max.y = Math.max(aSceneObjects[i].bb.max.y, mBoundingBox.max.y);
+        mBoundingBox.max.z = Math.max(aSceneObjects[i].bb.max.z, mBoundingBox.max.z);
+    }
+}
+
+function DeleteBB(scene)
+{
+    if(MeasureText.length == 0)
+        return;
+    scene.remove(mBBGeom);
+    while(MeasureText.length > 0)
+    {
+        scene.remove(MeasureText[MeasureText.length - 1]);
+        MeasureText.pop();
+    }
+}
+
+function DrawBB(scene)
+{
+    if(MeasureText.length > 0)
+    {
+        DeleteBB(scene);
+        return;
+    }
+    let boundingBox = mBoundingBox;
+    const midPos = new THREE.Vector3((boundingBox.min.x + boundingBox.max.x)/ 2, (boundingBox.min.y + boundingBox.max.y)/ 2,
+    (boundingBox.min.z + boundingBox.max.z)/ 2);
+    const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
+    const height = Math.sqrt(Math.pow(boundingBox.min.y - boundingBox.max.y, 2));
+    const length = Math.sqrt(Math.pow(boundingBox.min.z - boundingBox.max.z, 2));
+
+    const geometry = new THREE.BoxGeometry( width, height, length );
+    geometry.translate(midPos.x, midPos.y, midPos.z);
+    //const material1 = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    //mBBGeom = new THREE.Mesh( geometry, material1 );
+   // material1.wireframe = true;
+    //material1.transparent = true;
+    //material1.opacity = 0.1;
+    //scene.add( mBBGeom );
+
+    //const geometry1 = new THREE.SphereGeometry( 100, 100, 100 );
+
+const wireframe = new THREE.EdgesGeometry( geometry );
+
+const line = new THREE.LineSegments( wireframe );
+
+scene.add( line );
+
+    const diagnoalLength = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2.0) 
+    + Math.pow(boundingBox.min.y - boundingBox.max.y, 2.0) + Math.pow(boundingBox.min.z - boundingBox.max.z, 2.0));
+    let scale = diagnoalLength / 10.0;
+    CreateText('W = ' + width.toFixed(2).toString(), scene, new THREE.Vector3(midPos.x, midPos.y, boundingBox.max.z), '', scale);
+    CreateText('H = ' + height.toFixed(2).toString(), scene, new THREE.Vector3(boundingBox.min.x, midPos.y, midPos.z), 'z', scale);
+    CreateText('L = ' + length.toFixed(2).toString(), scene, new THREE.Vector3(boundingBox.max.x, midPos.y, midPos.z), 'y', scale);
+
+}
+
+function CreateText(str, scene, pos, rot, scale)
+{
+    const loader = new THREE.FontLoader();
+
+    loader.load( './assets/fonts/gentilis_regular.typeface.json', function ( font ) {
+
+	const geometry = new THREE.TextGeometry( str, {
+		font: font,
+		size: scale,
+		height: 0.1,
+		curveSegments: 1,
+		bevelEnabled: false,
+		bevelThickness: 10,
+		bevelSize: 8,
+		bevelOffset: 0,
+		bevelSegments: 5
+	} );
+    
+    if(rot == 'y')
+    {
+        geometry.rotateY(1.57);
+    }
+    else if(rot == 'z')
+    {
+        geometry.rotateZ(1.57);
+    }
+    //
+    geometry.translate(pos.x, pos.y, pos.z);
+    const tm = new THREE.MeshBasicMaterial( {color: 0xffa500} );
+    var text = new THREE.Mesh(geometry, tm);
+           // text.castShadow = true;
+            scene.add(text);
+            MeasureText.push(text);
+} );
 }
 
 function CreatePointLight(internsity) {
@@ -343,8 +462,10 @@ function getMaterial(type, color, reflectionCube) {
             selectedMaterial.metalness = 1.0;
             selectedMaterial.roughness = 0.0;
         
-            //gui.add(material, 'metalness', 0, 1);
-            //gui.add(material, 'roughness', 0, 1);
+            selectedMaterial.envMap = reflectionCube;
+            selectedMaterial.internsity = 5.0;
+           // gui.add(selectedMaterial, 'metalness', 0, 1);
+           // gui.add(selectedMaterial, 'roughness', 0, 1);
           
 			break;
 		default:
@@ -372,7 +493,7 @@ function GetFileExtension(filePath)
 
 function LoadCubemap()
 {
-    for(var index = 0; index < 5; ++index)
+    for(var index = 0; index < 7; ++index)
     {
         var path = '/assets/cubemap/';
         path += (index + 1) + '/';
@@ -383,7 +504,8 @@ function LoadCubemap()
                     path + 'pz' + ext, path + 'nz' + ext ];
       var reflectionCube = new THREE.CubeTextureLoader().load(urls);
         reflectionCube.format = THREE.RGBFormat;
+       // reflectionCube.internsity = 2.0;
         aBackgroundScene.push(reflectionCube);
     }
-    
+    lightCube = aBackgroundScene[5];
 }
