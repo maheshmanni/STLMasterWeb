@@ -31,7 +31,7 @@ function Render() {
     const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(new THREE.Color( "rgb(128, 128, 128)"), 1.0);
+    renderer.setClearColor(new THREE.Color( "rgb(0, 0, 225)"), 1.0);
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
@@ -207,28 +207,33 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
                 material.opacity = 0.8;
                 material.transparent = true;
                 break;
-            case '11':
-                    Undo(scene);
+                case '11':
+                    material.color = new THREE.Color( 'purple' );
+                material.opacity = 0.8;
+                material.transparent = true;
                 break;
             case '12':
-                    DeleteAll(scene);
+                    Undo(scene);
                 break;
             case '13':
-                scene.background = aBackgroundScene[0];
+                    DeleteAll(scene);
                 break;
             case '14':
-                scene.background = aBackgroundScene[1];
+                scene.background = aBackgroundScene[0];
                 break;
             case '15':
-                scene.background = aBackgroundScene[2];
+                scene.background = aBackgroundScene[1];
                 break;
             case '16':
-                scene.background = aBackgroundScene[3];
+                scene.background = aBackgroundScene[2];
                 break;
             case '17':
-                scene.background = aBackgroundScene[4];
+                scene.background = aBackgroundScene[3];
                 break;
             case '18':
+                scene.background = aBackgroundScene[4];
+                break;
+            case '19':
                 DrawBB(scene);
                 break;
                   
@@ -376,11 +381,11 @@ function DrawBB(scene)
 
     //const geometry1 = new THREE.SphereGeometry( 100, 100, 100 );
 
-const wireframe = new THREE.EdgesGeometry( geometry );
+    const wireframe = new THREE.EdgesGeometry( geometry );
 
-const line = new THREE.LineSegments( wireframe );
+    mBBGeom = new THREE.LineSegments( wireframe );
 
-scene.add( line );
+    scene.add( mBBGeom );
 
     const diagnoalLength = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2.0) 
     + Math.pow(boundingBox.min.y - boundingBox.max.y, 2.0) + Math.pow(boundingBox.min.z - boundingBox.max.z, 2.0));
