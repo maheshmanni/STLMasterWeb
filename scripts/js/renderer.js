@@ -13,7 +13,7 @@ var selectedObjColor;
 var hasObjectsPicked = false;
 const aSceneObjects = [];
 const aBackgroundScene = [];
-
+var camera;
 var mBoundingBox;
 var MeasureText = [];
 var mBBGeom;
@@ -22,13 +22,29 @@ var renderer;
 var gui;
 var lightCube;
 var mSelectedMaterial;
+var controls;
+var params = {
+    metallic: 1,
+    roughness: 0.0
+};
 function Render() {
     const scene = new THREE.Scene();
     gui = new dat.GUI();
+    gui.add(params, 'metallic').min(0).max(1).step(0.1).onFinishChange(function(){
+        // refresh based on the new value of params.interation
+        console.log(this.getValue());
+        mSelectedMaterial.metalness = this.getValue();
+        
+    })
+    gui.add(params, 'roughness').min(0).max(1).step(0.1).onFinishChange(function(){
+        // refresh based on the new value of params.interation
+        console.log(this.getValue());
+        mSelectedMaterial.roughness = this.getValue();
+    })
    // mSelectedMaterial = getMaterial('standard', 'rgb(255, 217, 145)', lightCube);
    // gui.add(mSelectedMaterial, 'metalness', 0, 1);
    // gui.add(mSelectedMaterial, 'roughness', 0, 1);
-    const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 10000 );
 
     renderer = new THREE.WebGLRenderer();
     renderer.setClearColor(new THREE.Color( "rgb(0, 0, 225)"), 1.0);
@@ -45,7 +61,6 @@ function Render() {
     document.addEventListener('mousedown', onDocumentMouseDown, false);
     function onDocumentMouseDown(event) {
 
-        console.log("mouse down");
         const _y = event.clientY - 50;
         var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( _y / window.innerHeight ) * 2 + 1, 0.5);
             vector = vector.unproject(camera);
@@ -74,6 +89,7 @@ function Render() {
                 hasObjectsPicked = true;
             }
     }
+    
     var fileButton = document.getElementById("fileButton");
     fileButton.addEventListener('change', function(e){
 
@@ -134,8 +150,9 @@ function Render() {
     }
       
 
-});
+    
 
+});
 const colorPickElemnent = document.getElementById("colorpicker");
 colorPickElemnent.addEventListener('change', function(e) {
 
@@ -213,6 +230,8 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
                 material.transparent = true;
                 break;
             case '12':
+                var speed = 2000;
+
                     Undo(scene);
                 break;
             case '13':
@@ -267,7 +286,7 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
     //scene.background = reflectionCube;
 
     camera.position.z = 5;
-    const controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.update();
     renderer.shadowMap.enabled = true;
     renderer.render( scene, camera );
@@ -342,6 +361,19 @@ function UpdateBB()
         mBoundingBox.max.y = Math.max(aSceneObjects[i].bb.max.y, mBoundingBox.max.y);
         mBoundingBox.max.z = Math.max(aSceneObjects[i].bb.max.z, mBoundingBox.max.z);
     }
+
+//fitCameraToObject(camera, 1.0);
+
+let boundingBox = mBoundingBox;
+const midPos = new THREE.Vector3((boundingBox.min.x + boundingBox.max.x)/ 2, (boundingBox.min.y + boundingBox.max.y)/ 2,
+    (boundingBox.min.z + boundingBox.max.z)/ 2);
+const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
+    const height = Math.sqrt(Math.pow(boundingBox.min.y - boundingBox.max.y, 2));
+    const length = Math.sqrt(Math.pow(boundingBox.min.z - boundingBox.max.z, 2));
+
+    const geometry = new THREE.BoxGeometry( width, height, length );
+    geometry.translate(midPos.x, midPos.y, midPos.z);
+    fitCameraToCenteredObject(camera, geometry, 2, controls);
 }
 
 function DeleteBB(scene)
@@ -514,3 +546,123 @@ function LoadCubemap()
     }
     lightCube = aBackgroundScene[5];
 }
+
+function fitCameraToObject( camera, offset ) {
+
+    offset = offset || 1.25;
+
+    let boundingBox = mBoundingBox;
+    const center = new THREE.Vector3((boundingBox.min.x + boundingBox.max.x)/ 2, (boundingBox.min.y + boundingBox.max.y)/ 2,
+    (boundingBox.min.z + boundingBox.max.z)/ 2);
+
+    const size = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2) +
+    Math.pow(boundingBox.min.y - boundingBox.max.y, 2) +
+    Math.pow(boundingBox.min.z - boundingBox.max.z, 2));
+
+
+    const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
+    const height = Math.sqrt(Math.pow(boundingBox.min.y - boundingBox.max.y, 2));
+    const length = Math.sqrt(Math.pow(boundingBox.min.z - boundingBox.max.z, 2));
+    // get the max side of the bounding box (fits to width OR height as needed )
+    const maxDim = Math.max( width, height, length );
+    const fov = camera.fov * ( Math.PI / 180 );
+    let cameraZ = Math.abs( maxDim / 4 * Math.tan( fov * 2 ) );
+
+    cameraZ *= offset; // zoom out a little so that objects don't fill the screen
+
+    camera.position.z = cameraZ;
+
+    const minZ = boundingBox.min.z;
+    const cameraToFarEdge = ( minZ < 0 ) ? -minZ + cameraZ : cameraZ - minZ;
+
+    camera.far = cameraToFarEdge * 3;
+    camera.updateProjectionMatrix();
+
+
+        camera.lookAt( center );
+}
+
+const fitCameraToCenteredObject = function (camera, object, offset, orbitControls ) {
+   
+    object.computeBoundingBox();
+    var boundingBox = object.boundingBox.clone();//new THREE.Box3();
+   // boundingBox.setFromObject( object );
+
+    var middle = boundingBox.center();//new THREE.Vector3();
+    boundingBox.min.x = boundingBox.min.x + middle.x;
+    boundingBox.min.y = boundingBox.min.y + middle.y;
+    boundingBox.min.z = boundingBox.min.z + middle.z;
+
+    boundingBox.max.x = boundingBox.max.x + middle.x;
+    boundingBox.max.y = boundingBox.max.y + middle.y;
+    boundingBox.max.z = boundingBox.max.z + middle.z;
+
+    middle = boundingBox.center();
+    //boundingBox.min = boundingBox.min + middle;
+    //boundingBox.max = boundingBox.max + middle;
+    var size = new THREE.Vector3();
+    boundingBox.getSize(size);
+
+    // figure out how to fit the box in the view:
+    // 1. figure out horizontal FOV (on non-1.0 aspects)
+    // 2. figure out distance from the object in X and Y planes
+    // 3. select the max distance (to fit both sides in)
+    //
+    // The reason is as follows:
+    //
+    // Imagine a bounding box (BB) is centered at (0,0,0).
+    // Camera has vertical FOV (camera.fov) and horizontal FOV
+    // (camera.fov scaled by aspect, see fovh below)
+    //
+    // Therefore if you want to put the entire object into the field of view,
+    // you have to compute the distance as: z/2 (half of Z size of the BB
+    // protruding towards us) plus for both X and Y size of BB you have to
+    // figure out the distance created by the appropriate FOV.
+    //
+    // The FOV is always a triangle:
+    //
+    //  (size/2)
+    // +--------+
+    // |       /
+    // |      /
+    // |     /
+    // | F° /
+    // |   /
+    // |  /
+    // | /
+    // |/
+    //
+    // F° is half of respective FOV, so to compute the distance (the length
+    // of the straight line) one has to: `size/2 / Math.tan(F)`.
+    //
+    // FTR, from https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
+    // the camera.fov is the vertical FOV.
+
+    const fov = camera.fov * ( Math.PI / 180 );
+    const fovh = 2*Math.atan(Math.tan(fov/2) * camera.aspect);
+    let dx = size.z / 2 + Math.abs( size.x / 2 / Math.tan( fovh / 2 ) );
+    let dy = size.z / 2 + Math.abs( size.y / 2 / Math.tan( fov / 2 ) );
+    let cameraZ = Math.max(dx, dy);
+
+    // offset the camera, if desired (to avoid filling the whole canvas)
+    if( offset !== undefined && offset !== 0 ) cameraZ *= offset;
+
+    camera.position.set( middle.x, middle.y, cameraZ );
+  // camera.position.set( 0.0, 0.0, cameraZ );
+    // set the far plane of the camera so that it easily encompasses the whole object
+    const minZ = boundingBox.min.z;
+    const cameraToFarEdge = ( minZ < 0 ) ? -minZ + cameraZ : cameraZ - minZ;
+
+    camera.far = cameraToFarEdge * 3;
+    camera.updateProjectionMatrix();
+
+   // camera.lookAt( middle );
+    if ( orbitControls !== undefined ) {
+        // set camera to rotate around the center
+       // orbitControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
+     //  orbitControls.position = new THREE.Vector3(0.0, 0.0, cameraZ);
+       // orbitControls.target = new THREE.Vector3(middle.x, middle.y, 0.0);
+        // prevent camera from zooming out far enough to create far plane cutoff
+       /// orbitControls.maxDistance = cameraToFarEdge * 2;
+    }
+};

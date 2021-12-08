@@ -532,13 +532,14 @@ a.rotate-box-1:hover, a.rotate-box-2:hover {
 }
 .portfolio_content{}
 .portfolio_single_content{
-	position: relative;
+	position: center;
 	top: 0;
 	left: 0;
 	width: 100%;
-	z-index: 5;
-	margin-bottom:30px;
-	overflow:hidden;
+	
+	padding-left:25%;
+	padding-right: 25%;
+	padding-bottom: 25%;
 	
 }
 .portfolio_single_content:hover img{
@@ -560,10 +561,17 @@ a.rotate-box-1:hover, a.rotate-box-2:hover {
 	-o-transition:all 1s;
 	-ms-transition:all 1s;
 	transition:all 1s;
+	padding-left:25%;
+	padding-right: 25%;
+	padding-bottom: 25%;
+	
 }
 .portfolio_single_content .canv{
 	width:100% !important;
 	height:100% !important;
+	padding-left:25%;
+	padding-right: 25%;
+	padding-bottom: 25%;
 }
 .portfolio_single_content div+div{
 	background: none repeat scroll 0 0 rgba(255,255,255,.9);
@@ -578,6 +586,10 @@ a.rotate-box-1:hover, a.rotate-box-2:hover {
 	width: 100%;
 	z-index: 12;
 	border-top:0;
+
+	padding-left:25%;
+	padding-right: 25%;
+	padding-bottom: 25%;
 }
 /*.portfolio_single_content:hover div+div{bottom: 0;}*/
 .portfolio_single_content div{
@@ -589,12 +601,19 @@ a.rotate-box-1:hover, a.rotate-box-2:hover {
 	height:100%;
 	text-align:center;
 	transform:scale(0);
-	transition:all .6s;
-	opacity:0;
+	transition:all .1s;
+	opacity:1;
+
+	padding-left:25%;
+	padding-right: 25%;
+	padding-bottom: 25%;
 }
 .portfolio_single_content:hover div{
 	transform:scale(1);
 	opacity:1;
+	padding-left:25%;
+	padding-right: 25%;
+	padding-bottom: 25%;
 }
 .portfolio_single_content div a{
 	color: #FFFFFF;
@@ -604,7 +623,9 @@ a.rotate-box-1:hover, a.rotate-box-2:hover {
 	margin-top: 40%;
 	padding-bottom: 10px;
 	text-decoration: none;
-	text-transform: uppercase;
+	
+	
+	
 }
 .portfolio_single_content div span{
 	color: #FFFFFF;
@@ -1052,27 +1073,6 @@ p.subtitle {
 	transition: all 0.6s ease-in-out;
 }
 
-.btn-ios {
-	border: 0px solid #fff;
-	color: #fff;
-	padding: 8px 12px;
-	display: inline-block;
-	vertical-align: middle;
-	-webkit-transform: translateZ(0);
-	transform: translateZ(0);
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-	-moz-osx-font-smoothing: grayscale;
-	position: relative;
-	-webkit-transition-property: color;
-	transition-property: color;
-	-webkit-transition-duration: 0.3s;
-	transition-duration: 0.3s;
-	height: 240px;
-  width: 141px;
-  background: url('/img/iphone.png');
-}
 /* Button blank */
 .btn-blank {
 	border: 2px solid #fff;
@@ -1161,6 +1161,4 @@ p.subtitle {
 	-o-transform: rotate(-45deg);
 	transform: rotate(-45deg);
 }
-
-
 /* ===== End buttons ===== */
