@@ -278,8 +278,8 @@ section {
 }
 #text-carousel-intro-section .caption {
 	position: relative;
-	top: 10%;
-	margin-top: -100px;
+	top: 0%;
+	margin-top: -50px;
 }
 #text-carousel-intro-section .caption h1 {
 	margin-top: 0;
@@ -1075,24 +1075,15 @@ p.subtitle {
 }
 
 .btn-blank-ios {
-	border: 0px solid #fff;
-	color: #fff;
 	
-	display: inline-block;
-	vertical-align: middle;
-	-webkit-transform: translateZ(0);
-	transform: translateZ(0);
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-	-moz-osx-font-smoothing: grayscale;
-	position: center;
-	-webkit-transition-property: color;
-	transition-property: color;
+	float: left;
+
+	margin-top: 8%;
 	-webkit-transition-duration: 0.3s;
 	transition-duration: 0.3s;
 	width: 317px;
 	height: 600px;
+	display: block;
 }
 
 .btn-blank-ios:hover{
@@ -1105,6 +1096,9 @@ p.subtitle {
 }
 
 .btn-blank-ipad {
+
+	float: right;
+	margin-top: 8%;
 	border: 0px solid #fff;
 	color: #fff;
 	
@@ -1135,6 +1129,8 @@ p.subtitle {
 }
 
 .btn-blank-mac {
+	float: left;
+	margin-top: 8%;
 	border: 0px solid #fff;
 	color: #fff;
 	
@@ -1165,6 +1161,8 @@ p.subtitle {
 }
 
 .btn-blank-android {
+	float: right;
+	margin-top: 8%;
 	border: 0px solid #fff;
 	color: #fff;
 	
