@@ -25,6 +25,24 @@ body .body {
 .tab {
 	margin-left: 2.5em
    }
+
+   .example {
+	margin: 1em 0;
+	text-align: center;
+  }
+  
+  .example img {
+	width: 30vw;
+	height: 30vw;
+  }
+  
+  .example-cover img {
+	object-fit: cover;
+  }
+  
+  .example-contain img {
+	object-fit: contain;
+  }
 .cover {
 	position: absolute;
 	width: 100%;
@@ -574,6 +592,7 @@ a.rotate-box-1:hover, a.rotate-box-2:hover {
 	-o-transition:all 1s;
 	-ms-transition:all 1s;
 	transition:all 1s;
+	object-fit: contain;
 }
 .portfolio_single_content .canv{
 	width:100% !important;
