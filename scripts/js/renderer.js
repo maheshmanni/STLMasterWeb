@@ -47,7 +47,7 @@ function Render() {
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 10000 );
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(new THREE.Color( "rgb(0, 0, 225)"), 1.0);
+    renderer.setClearColor(new THREE.Color( "rgb(47, 161, 214)"), 1.0);
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
 
@@ -373,7 +373,7 @@ const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
 
     const geometry = new THREE.BoxGeometry( width, height, length );
     geometry.translate(midPos.x, midPos.y, midPos.z);
-    fitCameraToCenteredObject(camera, geometry, 2, controls);
+    fitCameraToCenteredObject(camera, geometry, 4, controls);
 }
 
 function DeleteBB(scene)
@@ -647,22 +647,30 @@ const fitCameraToCenteredObject = function (camera, object, offset, orbitControl
     // offset the camera, if desired (to avoid filling the whole canvas)
     if( offset !== undefined && offset !== 0 ) cameraZ *= offset;
 
-    camera.position.set( middle.x, middle.y, cameraZ );
+    let _x = middle.x / 2 ;// + boundingBox.max.x
+    let _y = middle.y / 2;// + boundingBox.max.y
+    camera.position.set(_x, _y, cameraZ);
   // camera.position.set( 0.0, 0.0, cameraZ );
     // set the far plane of the camera so that it easily encompasses the whole object
     const minZ = boundingBox.min.z;
     const cameraToFarEdge = ( minZ < 0 ) ? -minZ + cameraZ : cameraZ - minZ;
 
-    camera.far = cameraToFarEdge * 3;
-    camera.updateProjectionMatrix();
+    camera.far = cameraToFarEdge * 7;
+    
 
+    //camera.lookAt (new THREE.Vector3(middle.x, middle.y, middle.z));//( boundingSphere.center );
+  
+    orbitControls.update();
+    
    // camera.lookAt( middle );
     if ( orbitControls !== undefined ) {
         // set camera to rotate around the center
        // orbitControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
-     //  orbitControls.position = new THREE.Vector3(0.0, 0.0, cameraZ);
-       // orbitControls.target = new THREE.Vector3(middle.x, middle.y, 0.0);
+     //  orbitControls.position = new THREE.Vector3(middle.x + boundingBox.min.x, middle.y, cameraZ);
+     orbitControls.target = new THREE.Vector3(_x, _y, middle.z);
         // prevent camera from zooming out far enough to create far plane cutoff
-       /// orbitControls.maxDistance = cameraToFarEdge * 2;
+       // orbitControls.maxDistance = cameraToFarEdge * 2;
     }
+    orbitControls.update();
+    camera.updateProjectionMatrix();
 };
