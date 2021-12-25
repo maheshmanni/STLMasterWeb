@@ -59,6 +59,7 @@ function Render() {
     //scene.add( cube );
 	
     document.addEventListener('mousedown', onDocumentMouseDown, false);
+    document.addEventListener('mousedown', onDocumentMouseRelease, false);
     function onDocumentMouseDown(event) {
 
         const _y = event.clientY - 50;
@@ -90,6 +91,10 @@ function Render() {
             }
     }
     
+    function onDocumentMouseRelease(event)
+    {
+       // controls.reset()
+    }
     var fileButton = document.getElementById("fileButton");
     fileButton.addEventListener('change', function(e){
 
@@ -286,7 +291,8 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
     //scene.background = reflectionCube;
 
     camera.position.z = 5;
-    controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls = new THREE.ArcballControls( camera, renderer.domElement );
+    
     controls.update();
     renderer.shadowMap.enabled = true;
     renderer.render( scene, camera );
