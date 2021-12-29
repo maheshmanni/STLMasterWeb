@@ -23,6 +23,7 @@ var gui;
 var lightCube;
 var mSelectedMaterial;
 var controls;
+var mBBLength;
 var params = {
     metallic: 1,
     roughness: 0.0
@@ -59,7 +60,7 @@ function Render() {
     //scene.add( cube );
 	
     document.addEventListener('mousedown', onDocumentMouseDown, false);
-    document.addEventListener('mousedown', onDocumentMouseRelease, false);
+  //  document.addEventListener('mousewheel', onDocumentMouseRelease, false);
     function onDocumentMouseDown(event) {
 
         const _y = event.clientY - 50;
@@ -93,7 +94,14 @@ function Render() {
     
     function onDocumentMouseRelease(event)
     {
-       // controls.reset()
+        var dirVector = new THREE.Vector3(1.0, 1.0, 0.0);
+        camera.getWorldDirection(dirVector);
+
+        let delta = (mBBLength * event.deltaY) / 100
+       camera.position.x += dirVector.x * delta;
+       camera.position.y += dirVector.y * delta;
+        camera.position.z += dirVector.z * delta;
+      
     }
     var fileButton = document.getElementById("fileButton");
     fileButton.addEventListener('change', function(e){
@@ -291,7 +299,7 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
     //scene.background = reflectionCube;
 
     camera.position.z = 5;
-    controls = new THREE.ArcballControls( camera, renderer.domElement );
+    controls = new THREE.TrackballControls( camera, renderer.domElement );
     
     controls.update();
     renderer.shadowMap.enabled = true;
@@ -377,6 +385,7 @@ const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
     const height = Math.sqrt(Math.pow(boundingBox.min.y - boundingBox.max.y, 2));
     const length = Math.sqrt(Math.pow(boundingBox.min.z - boundingBox.max.z, 2));
 
+    mBBLength = width + height + length;
     const geometry = new THREE.BoxGeometry( width, height, length );
     geometry.translate(midPos.x, midPos.y, midPos.z);
     fitCameraToCenteredObject(camera, geometry, 4, controls);

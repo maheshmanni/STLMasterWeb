@@ -457,7 +457,6 @@
 									size = Math.pow( this.scaleFactor, - sgn );
 
 								}
-
 								if ( this.cursorZoom && this.enablePan ) {
 
 									let scalePoint;
@@ -476,7 +475,7 @@
 
 								} else {
 
-									this.applyTransformMatrix( this.scale( size, this._gizmos.position ) );
+								//	this.applyTransformMatrix( this.scale( size, this._gizmos.position ) );
 
 								}
 
