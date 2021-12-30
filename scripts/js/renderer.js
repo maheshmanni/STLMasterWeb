@@ -24,6 +24,7 @@ var lightCube;
 var mSelectedMaterial;
 var controls;
 var mBBLength;
+var mFitNeeded = true;
 var params = {
     metallic: 1,
     roughness: 0.0
@@ -60,8 +61,23 @@ function Render() {
     //scene.add( cube );
 	
     document.addEventListener('mousedown', onDocumentMouseDown, false);
-  //  document.addEventListener('mousewheel', onDocumentMouseRelease, false);
+    document.addEventListener('mouseup', onDocumentMouseRelease, false);
     function onDocumentMouseDown(event) {
+
+      
+    }
+    
+    function onDocumentMouseRelease(event)
+    {
+       /* var dirVector = new THREE.Vector3(1.0, 1.0, 0.0);
+        camera.getWorldDirection(dirVector);
+
+        let delta = (mBBLength * event.deltaY) / 100
+       camera.position.x += dirVector.x * delta;
+       camera.position.y += dirVector.y * delta;
+        camera.position.z += dirVector.z * delta;*/
+
+        console.log("mouse release");
 
         const _y = event.clientY - 50;
         var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( _y / window.innerHeight ) * 2 + 1, 0.5);
@@ -90,17 +106,6 @@ function Render() {
                 material.color = new THREE.Color( "rgb(255, 255, 0)");
                 hasObjectsPicked = true;
             }
-    }
-    
-    function onDocumentMouseRelease(event)
-    {
-        var dirVector = new THREE.Vector3(1.0, 1.0, 0.0);
-        camera.getWorldDirection(dirVector);
-
-        let delta = (mBBLength * event.deltaY) / 100
-       camera.position.x += dirVector.x * delta;
-       camera.position.y += dirVector.y * delta;
-        camera.position.z += dirVector.z * delta;
       
     }
     var fileButton = document.getElementById("fileButton");
@@ -356,6 +361,7 @@ function DeleteAll(scene)
         scene.remove(aSceneObjects[aSceneObjects.length - 1].object);
         aSceneObjects.pop();
     }
+    mFitNeeded = true;
 }
 
 function UpdateBB()
@@ -376,7 +382,6 @@ function UpdateBB()
         mBoundingBox.max.z = Math.max(aSceneObjects[i].bb.max.z, mBoundingBox.max.z);
     }
 
-//fitCameraToObject(camera, 1.0);
 
 let boundingBox = mBoundingBox;
 const midPos = new THREE.Vector3((boundingBox.min.x + boundingBox.max.x)/ 2, (boundingBox.min.y + boundingBox.max.y)/ 2,
@@ -388,7 +393,7 @@ const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
     mBBLength = width + height + length;
     const geometry = new THREE.BoxGeometry( width, height, length );
     geometry.translate(midPos.x, midPos.y, midPos.z);
-    fitCameraToCenteredObject(camera, geometry, 4, controls);
+    fitCameraToCenteredObject(camera, geometry, 2, controls);
 }
 
 function DeleteBB(scene)
@@ -599,6 +604,12 @@ function fitCameraToObject( camera, offset ) {
 
 const fitCameraToCenteredObject = function (camera, object, offset, orbitControls ) {
    
+    if(!mFitNeeded)
+    {
+        return;
+    }
+    //fit is needed only for first loaded object
+    mFitNeeded = false;
     object.computeBoundingBox();
     var boundingBox = object.boundingBox.clone();//new THREE.Box3();
    // boundingBox.setFromObject( object );
