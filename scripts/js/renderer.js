@@ -286,11 +286,6 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
     pointLight.position.y = 2;
     pointLight.position.x = 2;
     pointLight.position.z = 2;
-  //  gui.add(pointLight, 'intensity', 1, 10);
-    //gui.add(pointLight.position, 'y', 0, 20);
-   // gui.add(material, 'shininess', 0, 1000);
-   // scene.add(pointLight);
-   // scene.add(pointLight);
 
     var plane = CreateGroundPlane(4);
     plane.rotation.x = Math.PI/2;
