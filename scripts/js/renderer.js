@@ -388,7 +388,7 @@ const width = Math.sqrt(Math.pow(boundingBox.min.x - boundingBox.max.x, 2));
     mBBLength = width + height + length;
     const geometry = new THREE.BoxGeometry( width, height, length );
     geometry.translate(midPos.x, midPos.y, midPos.z);
-    fitCameraToCenteredObject(camera, geometry, 2, controls);
+    fitCameraToCenteredObject(camera, geometry, 3, controls);
 }
 
 function DeleteBB(scene)
