@@ -688,7 +688,7 @@ const fitCameraToCenteredObject = function (camera, object, offset, orbitControl
         // set camera to rotate around the center
        // orbitControls.target = new THREE.Vector3(0.0, 0.0, 0.0);
      //  orbitControls.position = new THREE.Vector3(middle.x + boundingBox.min.x, middle.y, cameraZ);
-     orbitControls.target = new THREE.Vector3(_x, _y, middle.z);
+     orbitControls.target = new THREE.Vector3(_x, _y, middle.z/2);
         // prevent camera from zooming out far enough to create far plane cutoff
        // orbitControls.maxDistance = cameraToFarEdge * 2;
     }
