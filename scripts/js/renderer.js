@@ -13,6 +13,8 @@ var selectedObjColor;
 var hasObjectsPicked = false;
 const aSceneObjects = [];
 const aBackgroundScene = [];
+const aWireFrameObjects = [];
+const aPointObjects = [];
 var camera;
 var mBoundingBox;
 var MeasureText = [];
@@ -69,15 +71,6 @@ function Render() {
     
     function onDocumentMouseRelease(event)
     {
-       /* var dirVector = new THREE.Vector3(1.0, 1.0, 0.0);
-        camera.getWorldDirection(dirVector);
-
-        let delta = (mBBLength * event.deltaY) / 100
-       camera.position.x += dirVector.x * delta;
-       camera.position.y += dirVector.y * delta;
-        camera.position.z += dirVector.z * delta;*/
-
-        console.log("mouse release");
 
         const _y = event.clientY - 50;
         var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( _y / window.innerHeight ) * 2 + 1, 0.5);
@@ -114,6 +107,7 @@ function Render() {
     var file = e.target.files[0];
     const fileExt = GetFileExtension(file.name);
 
+    DeleteAllWireFrame(scene)
     if(fileExt == 'obj' || fileExt == 'OBJ')
     {
         material = getMaterial('standard', 'rgb(255, 217, 145)', lightCube);
@@ -163,7 +157,6 @@ function Render() {
         UpdateBB();
         scene.add(mesh);  
         DeleteBB(scene);
-
         });
     }
       
@@ -273,7 +266,12 @@ document.getElementById("mySidenav").addEventListener('click', function(e) {
             case '19':
                 DrawBB(scene);
                 break;
-                  
+            case '200':
+            case '201':
+            case '202':
+            case '203':
+                SetDisplayType(scene, e.target.id - 200);
+                break;
         default:
             break;
       }
@@ -333,6 +331,82 @@ function CreateGroundPlane(size) {
 function CreateBoundingBox()
 {
 
+}
+
+function ResetDisplayType()
+{
+    var index = 0;
+    while(index < aSceneObjects.length)
+    {
+        aSceneObjects[index].object.visible = true;
+        aSceneObjects[index].material.wireframe = true;
+        index++;
+    }
+}
+function SetDisplayType(scene, type)
+{
+    DeleteAllWireFrame(scene);
+    switch (type) {
+        case 0:
+            
+            
+            var index = 0;
+            var dotMaterial = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false } );
+            while(index < aSceneObjects.length)
+            {
+                aSceneObjects[index].material.wireframe = false;
+                aSceneObjects[index].object.visible = false;
+                var dot = new THREE.Points( aSceneObjects[index].mesh.geometry, dotMaterial );
+                aPointObjects.push(dot)
+                scene.add(dot);
+                index++;
+            }
+            break;
+        case 1:
+            ResetDisplayType();
+            break;
+        case 2:
+            var index = 0;
+            while(index < aSceneObjects.length)
+            {
+                aSceneObjects[index].object.visible = true;
+                aSceneObjects[index].material.wireframe = false;
+                index++;
+            }
+            break;
+        case 3:
+            var index = 0;
+            while(index < aSceneObjects.length)
+            {
+                aSceneObjects[index].material.wireframe = false;
+                aSceneObjects[index].object.visible = true;
+                const wireframe = new THREE.WireframeGeometry( aSceneObjects[index].mesh.geometry );
+                const line = new THREE.LineSegments( wireframe );
+                aWireFrameObjects.push(line)
+                scene.add(line);
+                index++;
+            }
+        
+            break;
+        default:
+            break;
+    }
+}
+
+function DeleteAllWireFrame(scene)
+{
+    ResetDisplayType();
+    if(aWireFrameObjects.length > 0)
+    {
+        scene.remove(aWireFrameObjects[aWireFrameObjects.length - 1]);
+        aWireFrameObjects.pop();   
+    }
+
+    if(aPointObjects.length > 0)
+    {
+        scene.remove(aPointObjects[aPointObjects.length - 1]);
+        aPointObjects.pop();   
+    }
 }
 
 function Undo(scene)
