@@ -351,7 +351,7 @@ function SetDisplayType(scene, type)
             
             
             var index = 0;
-            var dotMaterial = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false } );
+            var dotMaterial = new THREE.PointsMaterial( { size: 1, sizeAttenuation: false } );
             while(index < aSceneObjects.length)
             {
                 aSceneObjects[index].material.wireframe = false;
